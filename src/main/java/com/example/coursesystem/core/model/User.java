@@ -1,7 +1,10 @@
 package com.example.coursesystem.core.model;
 
+import com.example.coursesystem.core.model.enums.UserRole;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.Date;
 
 @Document(collection = "users")
 public class User {
@@ -11,11 +14,11 @@ public class User {
 
     private String password;
 
-
     private String email;
 
+    private UserRole role;
 
-    private String role;
+    private Date creationDate;
 
     public String getUsername() {
         return username;
@@ -41,12 +44,20 @@ public class User {
         this.email = email;
     }
 
-    public String getRole() {
+    public UserRole getRole() {
         return role;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public void setRole(UserRole userRole) {
+        this.role = userRole;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }
 
 }
