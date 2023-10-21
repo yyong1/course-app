@@ -64,4 +64,7 @@ public class Course {
     public void setLessons(List<String> lessons) {
         this.lessons = lessons;
     }
+
+    public void setId(String id) {
+    }
 }

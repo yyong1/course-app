@@ -2,7 +2,6 @@ package com.example.coursesystem.core.service;
 
 import com.example.coursesystem.core.model.Course;
 import com.example.coursesystem.core.repository.CourseRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
