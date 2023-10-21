@@ -20,4 +20,3 @@
 - [ ] Implement routing for your React-based UI (1 point)
 - [ ] Organize and implement services in your project to encapsulate business logic (1 point)
 
-Please check off each requirement as you complete it to ensure you meet the project's criteria.
