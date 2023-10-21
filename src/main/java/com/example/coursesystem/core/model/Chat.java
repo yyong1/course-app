@@ -16,7 +16,9 @@ public class Chat {
     private String adminId;
     private List<Message> messages;
     private boolean isOnline;
-
+    public String getId() {
+        return id;
+    }
     public String getUserId() {
         return userId;
     }
