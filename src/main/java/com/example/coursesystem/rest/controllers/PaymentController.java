@@ -38,10 +38,10 @@ public class PaymentController {
         if (!paymentService.getPaymentById(id).isPresent()) {
             return ResponseEntity.notFound().build();
         }
-        // change to actual changes
-//        payment.setId(id);
+        payment.setId(id);  // Set the ID to ensure the existing entity is updated
         return ResponseEntity.ok(paymentService.savePayment(payment));
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletePayment(@PathVariable String id) {

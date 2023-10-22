@@ -56,5 +56,9 @@ public class Payment {
     public void setExpirationDate(Date expirationDate) {
         this.expirationDate = expirationDate;
     }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 }
 
