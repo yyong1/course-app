@@ -1,16 +1,13 @@
-package com.example.coursesystem.core.model;
+package com.example.coursesystem.rest.dto;
 
+import com.example.coursesystem.core.model.User;
 import com.example.coursesystem.core.model.enums.UserRole;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 
-@Document(collection = "users")
-public class User {
-
-    @Id
+public class UserGetDTO {
     private String id;
+
     private String username;
 
     private String password;
@@ -21,20 +18,20 @@ public class User {
 
     private Date creationDate;
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
     public String getId() {
         return id;
     }
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getPassword() {
@@ -57,8 +54,8 @@ public class User {
         return role;
     }
 
-    public void setRole(UserRole userRole) {
-        this.role = userRole;
+    public void setRole(UserRole role) {
+        this.role = role;
     }
 
     public Date getCreationDate() {
@@ -69,4 +66,12 @@ public class User {
         this.creationDate = creationDate;
     }
 
+    public UserGetDTO(User user) {
+        this.id = user.getId();
+        this.username = user.getUsername();
+        this.password = user.getPassword();
+        this.email = user.getEmail();
+        this.role = user.getRole();
+        this.creationDate = user.getCreationDate();
+    }
 }
