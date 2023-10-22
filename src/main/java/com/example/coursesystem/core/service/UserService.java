@@ -34,11 +34,12 @@ public class UserService {
 
     public UserGetDTO updateUser(String id, UserRequestDTO userDTO) {
         if (userRepository.existsById(id)) {
-            return new UserGetDTO(userRepository.save(userDTO.toEntity()));
+            User updatedUser = userDTO.toEntity();
+            updatedUser.setId(id);
+            return new UserGetDTO(userRepository.save(updatedUser));
         }
         return null;
     }
-
     public void deleteUser(String id) {
         userRepository.deleteById(id);
     }
