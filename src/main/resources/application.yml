@@ -1,0 +1,13 @@
+configuration:
+  swagger:
+    app: 'Course Application API'
+    description: 'Course Application API for managing courses and students/admins via web interface'
+    developer: 'Andrei Baranov'
+    email: 'andrei.baranov@ibu.edu.ba'
+
+spring:
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: courseApp
