@@ -11,3 +11,7 @@ spring:
       host: localhost
       port: 27017
       database: courseApp
+
+security:
+  jwt:
+    secret: 'super$ecretK3y'
