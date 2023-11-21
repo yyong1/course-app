@@ -4,6 +4,9 @@ import com.example.coursesystem.core.model.User;
 import com.example.coursesystem.core.repository.UserRepository;
 import com.example.coursesystem.rest.dto.UserGetDTO;
 import com.example.coursesystem.rest.dto.UserRequestDTO;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -42,5 +45,15 @@ public class UserService {
     }
     public void deleteUser(String id) {
         userRepository.deleteById(id);
+    }
+
+    public UserDetailsService userDetailsService(){
+        return new UserDetailsService() {
+            @Override
+            public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+                return userRepository.findByUsernameOrEmail(username)
+                        .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+            }
+        };
     }
 }
