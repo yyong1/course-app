@@ -4,6 +4,7 @@ import com.example.coursesystem.core.model.User;
 import com.example.coursesystem.core.service.UserService;
 import com.example.coursesystem.rest.dto.UserGetDTO;
 import com.example.coursesystem.rest.dto.UserRequestDTO;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 @RestController
 @RequestMapping("/api/users")
+@SecurityRequirement(name = "JWT Security")
 public class UserController {
     private final UserService userService;
 

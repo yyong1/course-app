@@ -2,12 +2,15 @@ package com.example.coursesystem.rest.controllers;
 
 import com.example.coursesystem.core.model.Course;
 import com.example.coursesystem.core.service.CourseService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/courses")
+@SecurityRequirement(name = "JWT Security")
 public class CourseController {
     private final CourseService courseService;
 
@@ -26,6 +29,7 @@ public class CourseController {
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyAuthority('TEACHER', 'ADMIN')")
     public Course createCourse(@RequestBody Course course) {
         return courseService.createCourse(course);
     }
