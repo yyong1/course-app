@@ -14,4 +14,4 @@ spring:
 
 security:
   jwt:
-    secret: 'super$ecretK3y'
+    secret: 'AX0Tz7QUMGCuyC5i5jwpUkvu0JfQkVo1VNuUz8pF5sU='
