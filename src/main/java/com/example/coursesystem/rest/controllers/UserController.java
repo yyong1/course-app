@@ -32,10 +32,10 @@ public class UserController {
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @RequestMapping(method = RequestMethod.POST, path = "/register")
-    public ResponseEntity<UserGetDTO> createUser(@RequestBody UserRequestDTO user) {
-        return new ResponseEntity<>(userService.createUser(user), HttpStatus.CREATED);
-    }
+//    @RequestMapping(method = RequestMethod.POST, path = "/register")
+//    public ResponseEntity<UserGetDTO> createUser(@RequestBody UserRequestDTO user) {
+//        return new ResponseEntity<>(userService.createUser(user), HttpStatus.CREATED);
+//    }
 
     @PutMapping("/{id}")
     public ResponseEntity<UserGetDTO> updateUser(@PathVariable String id, @RequestBody UserRequestDTO userDTO) {

@@ -28,7 +28,6 @@ public class AuthService {
             this.userRepository = userRepository;
         }
 
-
         public UserGetDTO signUp(UserRequestDTO userRequestDTO) {
             userRequestDTO.setPassword(
                     passwordEncoder.encode(userRequestDTO.getPassword())
