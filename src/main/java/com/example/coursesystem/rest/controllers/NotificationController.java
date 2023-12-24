@@ -13,15 +13,13 @@ import java.io.IOException;
 @SecurityRequirement(name = "JWT Security")
 public class NotificationController {
     private final NotificationService notificationService;
-
-
     public NotificationController(NotificationService notificationService) {
         this.notificationService = notificationService;
     }
 
 
     @RequestMapping(path = "/broadcast", method = RequestMethod.POST)
-    @PreAuthorize("hasAnyAuthority('TEACHER', 'ADMIN')")
+    @PreAuthorize("hasAnyAuthority('STUDENT', 'TEACHER', 'ADMIN')")
     public ResponseEntity<Void> sendBroadcastMessage(@RequestBody MessageDTO message) throws IOException {
         System.out.println("The message is: " + message.getMessage());
         notificationService.broadcastMessage(message.getMessage());
@@ -30,7 +28,7 @@ public class NotificationController {
 
 
     @RequestMapping(path = "/send-to/{userId}", method = RequestMethod.POST)
-    @PreAuthorize("hasAnyAuthority('TEACHER', 'ADMIN')")
+    @PreAuthorize("hasAnyAuthority('STUDENT', 'TEACHER', 'ADMIN')")
     public ResponseEntity<Void> sendChatMessage(@PathVariable String userId, @RequestBody MessageDTO message) throws IOException {
         System.out.println("The message is: " + message.getMessage());
         notificationService.sendMessage(userId, message.getMessage());
