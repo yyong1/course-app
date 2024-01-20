@@ -1,9 +1,11 @@
 package com.example.coursesystem.rest.websockets;
 
 import com.example.coursesystem.core.exeptions.GeneralException;
+import com.example.coursesystem.core.model.Message;
 import com.example.coursesystem.core.model.User;
 import com.example.coursesystem.core.service.JwtService;
 import com.example.coursesystem.core.service.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
@@ -17,11 +19,14 @@ import java.util.Map;
 public class MainSocketHandler implements WebSocketHandler {
     private final JwtService jwtService;
     private final UserService userService;
+    private final WebSocketMessageHandler messageHandler;
+    private final ObjectMapper objectMapper = new ObjectMapper();
     public Map<String, WebSocketSession> sessions = new HashMap<>();
 
-    public MainSocketHandler(JwtService jwtService, UserService userService) {
+    public MainSocketHandler(JwtService jwtService, UserService userService, WebSocketMessageHandler messageHandler) {
         this.jwtService = jwtService;
         this.userService = userService;
+        this.messageHandler = messageHandler;
     }
 
     @Override
@@ -33,6 +38,11 @@ public class MainSocketHandler implements WebSocketHandler {
 
         sessions.put(user.getId(), session);
         System.out.println("Session created for the user " + user.getId() + " where the session id is " + session.getId());
+    }
+
+    @Override
+    public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
+
     }
 
     @Override
@@ -50,10 +60,13 @@ public class MainSocketHandler implements WebSocketHandler {
         return false;
     }
 
-    @Override
-    public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
-        String messageReceived = (String) message.getPayload();
-        System.out.println("Message received: " + messageReceived);
+    public void sendMessageToUser(String userId, Message message) throws IOException {
+        WebSocketSession session = sessions.get(userId);
+        if (session != null && session.isOpen()) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            String messageJson = objectMapper.writeValueAsString(message);
+            session.sendMessage(new TextMessage(messageJson));
+        }
     }
 
     public void broadcastMessage(String message) throws IOException {

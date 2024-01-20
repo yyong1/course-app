@@ -3,37 +3,42 @@ package com.example.coursesystem.core.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Document(collection = "chats")
 public class Chat {
 
     @Id
     private String id;
-
-    private String userId;
-    private String adminId;
+    private String chatName;
+    private Set<String> userIds;
     private List<Message> messages;
-    private boolean isOnline;
     public String getId() {
         return id;
     }
-    public String getUserId() {
-        return userId;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public String getChatName() {
+        return chatName;
     }
 
-    public String getAdminId() {
-        return adminId;
+    public void setChatName(String chatName) {
+        this.chatName = chatName;
     }
+//    public String getUserId() {
+//        return userId;
+//    }
+//
+//    public void setUserId(String userId) {
+//        this.userId = userId;
+//    }
 
-    public void setAdminId(String adminId) {
-        this.adminId = adminId;
-    }
+    public Set<String> getUserIds() { return userIds; }
+
+    public void setUserIds(Set<String> userIds) { this.userIds = userIds; }
 
     public List<Message> getMessages() {
         return messages;
@@ -43,41 +48,4 @@ public class Chat {
         this.messages = messages;
     }
 
-    public boolean isOnline() {
-        return isOnline;
-    }
-
-    public void setOnline(boolean online) {
-        isOnline = online;
-    }
-
-    static class Message {
-        private String senderId;
-        private String content;
-        private Date timestamp;
-
-        public String getSenderId() {
-            return senderId;
-        }
-
-        public void setSenderId(String senderId) {
-            this.senderId = senderId;
-        }
-
-        public String getContent() {
-            return content;
-        }
-
-        public void setContent(String content) {
-            this.content = content;
-        }
-
-        public Date getTimestamp() {
-            return timestamp;
-        }
-
-        public void setTimestamp(Date timestamp) {
-            this.timestamp = timestamp;
-        }
-    }
 }
