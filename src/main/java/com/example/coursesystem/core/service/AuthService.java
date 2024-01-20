@@ -35,14 +35,14 @@ public class AuthService {
             User user = userRepository.save(userRequestDTO.toEntity());
             return new UserGetDTO(user);
         }
-        public LoginDTO signIn(LoginRequestDTO loginRequestDTO) {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginRequestDTO.getEmail(), loginRequestDTO.getPassword())
-            );
-            User user = userRepository.findByUsernameOrEmail(loginRequestDTO.getEmail())
-                    .orElseThrow(() -> new ResourceNotFoundException("This user does not exist."));
-            String jwt = jwtService.generateToken(user);
+    public LoginDTO signIn(LoginRequestDTO loginRequestDTO) {
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequestDTO.getEmail(), loginRequestDTO.getPassword())
+        );
+        User user = userRepository.findByUsernameOrEmail(loginRequestDTO.getEmail())
+                .orElseThrow(() -> new ResourceNotFoundException("This user does not exist."));
+        String jwt = jwtService.generateToken(user);
 
-            return new LoginDTO(jwt);
-        }
+        return new LoginDTO(jwt, user.getUsername(), user.getEmail(), user.getRole());
+    }
 }
