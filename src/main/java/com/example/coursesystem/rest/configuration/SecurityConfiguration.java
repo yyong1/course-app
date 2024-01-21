@@ -39,8 +39,8 @@ public class SecurityConfiguration {
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(HttpMethod.GET, "/api/courses/**").permitAll()
-                        .requestMatchers("/api/courses/**").authenticated()
-                        .requestMatchers("/api/users/**").authenticated()
+                        .requestMatchers("/api/courses/**").permitAll()
+                        .requestMatchers("/api/users/**").permitAll()
                         .anyRequest().permitAll())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
