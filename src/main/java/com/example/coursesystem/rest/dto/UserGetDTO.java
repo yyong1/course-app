@@ -10,7 +10,7 @@ public class UserGetDTO {
 
     private String username;
 
-    private String password;
+//    private String password;
 
     private String email;
 
@@ -34,13 +34,13 @@ public class UserGetDTO {
         this.username = username;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
+//    public String getPassword() {
+//        return password;
+//    }
+//
+//    public void setPassword(String password) {
+//        this.password = password;
+//    }
 
     public String getEmail() {
         return email;
@@ -69,7 +69,7 @@ public class UserGetDTO {
     public UserGetDTO(User user) {
         this.id = user.getId();
         this.username = user.getUsername();
-        this.password = user.getPassword();
+//        this.password = user.getPassword();
         this.email = user.getEmail();
         this.role = user.getRole();
         this.creationDate = user.getCreationDate();

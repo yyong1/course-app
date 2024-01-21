@@ -1,6 +1,7 @@
 package com.example.coursesystem.rest.websockets;
 
 import com.example.coursesystem.core.exeptions.GeneralException;
+import com.example.coursesystem.core.model.Chat;
 import com.example.coursesystem.core.model.Message;
 import com.example.coursesystem.core.model.User;
 import com.example.coursesystem.core.service.JwtService;
@@ -91,6 +92,15 @@ public class MainSocketHandler implements WebSocketHandler {
             session.sendMessage(new TextMessage(message));
         } catch (IOException e) {
             throw new GeneralException(e);
+        }
+    }
+
+    public void sendNewChatNotificationToUser(String userId, Chat chat) throws IOException {
+        WebSocketSession session = sessions.get(userId);
+        if (session != null && session.isOpen()) {
+            String notification = "You have been added to a new chat: " + chat.getChatName();
+            // You might want to send a more structured message, e.g., a JSON object
+            session.sendMessage(new TextMessage(notification));
         }
     }
 

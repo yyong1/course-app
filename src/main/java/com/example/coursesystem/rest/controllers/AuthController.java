@@ -1,10 +1,7 @@
 package com.example.coursesystem.rest.controllers;
 
 import com.example.coursesystem.core.service.AuthService;
-import com.example.coursesystem.rest.dto.LoginDTO;
-import com.example.coursesystem.rest.dto.LoginRequestDTO;
-import com.example.coursesystem.rest.dto.UserGetDTO;
-import com.example.coursesystem.rest.dto.UserRequestDTO;
+import com.example.coursesystem.rest.dto.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,6 +26,11 @@ public class AuthController {
     @RequestMapping(method = RequestMethod.POST, path = "/login")
     public ResponseEntity<LoginDTO> login(@RequestBody LoginRequestDTO loginRequest) {
         return ResponseEntity.ok(authService.signIn(loginRequest));
+    }
+
+    @RequestMapping(method = RequestMethod.POST, path = "/refresh")
+    public ResponseEntity<JwtGetDTO> refreshToken(@RequestBody String jwtGetDTO) {
+        return ResponseEntity.ok(authService.refreshToken(jwtGetDTO));
     }
 }
 

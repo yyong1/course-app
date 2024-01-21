@@ -3,20 +3,22 @@ package com.example.coursesystem.core.service;
 import com.example.coursesystem.core.exeptions.repository.ResourceNotFoundException;
 import com.example.coursesystem.core.model.User;
 import com.example.coursesystem.core.repository.UserRepository;
-import com.example.coursesystem.rest.dto.LoginDTO;
-import com.example.coursesystem.rest.dto.LoginRequestDTO;
-import com.example.coursesystem.rest.dto.UserGetDTO;
-import com.example.coursesystem.rest.dto.UserRequestDTO;
+import com.example.coursesystem.rest.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Collections;
 
 @Service
 public class AuthService {
 
         private final UserRepository userRepository;
+        private final UserService userService;
 
         @Autowired
         private PasswordEncoder passwordEncoder;
@@ -24,8 +26,9 @@ public class AuthService {
         private JwtService jwtService;
         @Autowired
         private AuthenticationManager authenticationManager;
-        public AuthService(UserRepository userRepository) {
+        public AuthService(UserRepository userRepository, UserService userService) {
             this.userRepository = userRepository;
+            this.userService = userService;
         }
 
         public UserGetDTO signUp(UserRequestDTO userRequestDTO) {
@@ -44,5 +47,16 @@ public class AuthService {
         String jwt = jwtService.generateToken(user);
 
         return new LoginDTO(jwt, user.getUsername(), user.getEmail(), user.getRole());
+    }
+
+    public JwtGetDTO refreshToken(String jwtRefresh) {
+        if (jwtRefresh != null) {
+            User user = userService.findUserByUsernameOrEmail(jwtService.extractUserName(jwtRefresh));
+            if (user != null) {
+                String jwtRefreshToken = jwtService.generateRefreshToken(user);
+                return new JwtGetDTO(jwtRefreshToken);
+            }
+        }
+        throw new BadCredentialsException("Invalid Credentials");
     }
 }

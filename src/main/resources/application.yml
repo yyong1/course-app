@@ -15,3 +15,11 @@ spring:
 security:
   jwt:
     secret: 'AX0Tz7QUMGCuyC5i5jwpUkvu0JfQkVo1VNuUz8pF5sU'
+    token:
+      expire-length: 3600000
+    refresh-token:
+      expire-length: 28800000
+
+website:
+  frontend:
+    url: 'http://localhost:5173'

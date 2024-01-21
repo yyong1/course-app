@@ -37,6 +37,18 @@ public class ChatService {
     }
 
     public Chat createNewChat(Chat chat) { return chatRepository.save(chat); }
+//public Chat createNewChat(Chat chat) {
+//    Chat savedChat = chatRepository.save(chat);
+//    // Notify users about the new chat
+//    savedChat.getUserIds().forEach(userId -> {
+//        try {
+//            mainSocketHandler.sendNewChatNotificationToUser(userId, savedChat);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    });
+//    return savedChat;
+//}
 
     public Optional<Chat> editChatName(String chatId, String newChatName) {
         Optional<Chat> chat = chatRepository.findById(chatId);

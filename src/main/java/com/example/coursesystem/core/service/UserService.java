@@ -56,4 +56,9 @@ public class UserService {
             }
         };
     }
+
+        public User findUserByUsernameOrEmail(String username) {
+            return userRepository.findByUsernameOrEmail(username)
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        }
 }
