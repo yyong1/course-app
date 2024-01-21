@@ -5,7 +5,9 @@ import com.example.coursesystem.core.service.ChatService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.example.coursesystem.rest.websockets.MainSocketHandler;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -15,9 +17,11 @@ import java.util.Set;
 public class ChatController {
 
     private final ChatService chatService;
+    private final MainSocketHandler mainSocketHandler;
 
-    public ChatController(ChatService chatService) {
+    public ChatController(ChatService chatService, MainSocketHandler mainSocketHandler) {
         this.chatService = chatService;
+        this.mainSocketHandler = mainSocketHandler;
     }
 
     @GetMapping
@@ -35,9 +39,26 @@ public class ChatController {
         }
     }
 
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Chat>> getChatsByUserId(@PathVariable String userId) {
+        List<Chat> userChats = chatService.findByUserId(userId);
+        if (!userChats.isEmpty()) {
+            return new ResponseEntity<>(userChats, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
     @PostMapping
     public ResponseEntity<Chat> createChat(@RequestBody Chat chat) {
         Chat savedChat = chatService.createNewChat(chat);
+//        savedChat.getUserIds().forEach(memberId -> {
+//            try {
+//                mainSocketHandler.sendNewChatNotificationToUser(memberId, savedChat);
+//            } catch ( IOException e) {
+//                e.printStackTrace();
+//            }
+//        });
         return new ResponseEntity<>(savedChat, HttpStatus.CREATED);
     }
 

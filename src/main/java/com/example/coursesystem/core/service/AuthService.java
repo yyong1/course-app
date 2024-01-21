@@ -46,7 +46,7 @@ public class AuthService {
                 .orElseThrow(() -> new ResourceNotFoundException("This user does not exist."));
         String jwt = jwtService.generateToken(user);
 
-        return new LoginDTO(jwt, user.getUsername(), user.getEmail(), user.getRole());
+        return new LoginDTO(jwt, user.getId(), user.getUsername(), user.getEmail(), user.getRole());
     }
 
     public JwtGetDTO refreshToken(String jwtRefresh) {

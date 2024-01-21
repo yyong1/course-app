@@ -117,4 +117,5 @@ public class MainSocketHandler implements WebSocketHandler {
         UserDetails userDetails = userService.userDetailsService().loadUserByUsername(userEmail);
         return (User) userDetails;
     }
+
 }
