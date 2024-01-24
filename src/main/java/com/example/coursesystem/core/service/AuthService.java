@@ -1,6 +1,7 @@
 package com.example.coursesystem.core.service;
 
 import com.example.coursesystem.core.exeptions.repository.ResourceNotFoundException;
+import com.example.coursesystem.core.exeptions.user.UserAlreadyExistsException;
 import com.example.coursesystem.core.model.User;
 import com.example.coursesystem.core.repository.UserRepository;
 import com.example.coursesystem.rest.dto.*;
@@ -11,8 +12,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Collections;
 
 @Service
 public class AuthService {
@@ -31,13 +30,16 @@ public class AuthService {
             this.userService = userService;
         }
 
-        public UserGetDTO signUp(UserRequestDTO userRequestDTO) {
-            userRequestDTO.setPassword(
-                    passwordEncoder.encode(userRequestDTO.getPassword())
-            );
-            User user = userRepository.save(userRequestDTO.toEntity());
-            return new UserGetDTO(user);
+    public UserGetDTO signUp(UserRequestDTO userRequestDTO) {
+        userRequestDTO.setPassword(passwordEncoder.encode(userRequestDTO.getPassword()));
+        boolean exists = userRepository.existsByUsernameOrEmail(userRequestDTO.getUsername(), userRequestDTO.getEmail());
+        if (exists) {
+            throw new UserAlreadyExistsException("Username or email is already taken");
         }
+        User user = userRepository.save(userRequestDTO.toEntity());
+        return new UserGetDTO(user);
+    }
+
     public LoginDTO signIn(LoginRequestDTO loginRequestDTO) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequestDTO.getEmail(), loginRequestDTO.getPassword())

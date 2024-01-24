@@ -3,6 +3,10 @@ package com.example.coursesystem.core.exeptions;
 public class GeneralException extends RuntimeException {
     private int httpCode = 500;
 
+    public int getHttpCode() {
+        return httpCode;
+    }
+
     public GeneralException(int httpCode) {
         this.httpCode = httpCode;
     }

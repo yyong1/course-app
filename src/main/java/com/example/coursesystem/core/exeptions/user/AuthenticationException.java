@@ -1,4 +1,4 @@
-package com.example.coursesystem.core.exeptions;
+package com.example.coursesystem.core.exeptions.user;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -17,4 +17,5 @@ public class AuthenticationException extends GeneralException {
     public AuthenticationException(String message, Exception e) {
         super(message, e);
     }
+
 }

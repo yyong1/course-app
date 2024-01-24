@@ -17,9 +17,6 @@ public class ChatStompController {
     @MessageMapping("/chat/create")
     @SendTo("/topic/newChat")
     public Chat createChat(Chat chat) {
-        // Здесь может быть логика уведомления пользователей
-        return chatService.createNewChat(chat); // Отправляется всем подписчикам на '/topic/newChat'
+        return chatService.createNewChat(chat);
     }
-
-    // Другие методы для обработки сообщений
 }
