@@ -53,8 +53,8 @@ public class JwtService {
     }
 
     // +++
-    public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails, validityInMilliseconds);
+    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+        return generateToken(extraClaims, userDetails, validityInMilliseconds);
     }
     // +++
     private String generateToken(Map<String, Object> extraClaims, UserDetails userDetails, long validityInMilliseconds) {

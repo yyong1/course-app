@@ -13,6 +13,9 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Service
 public class AuthService {
 
@@ -46,10 +49,17 @@ public class AuthService {
         );
         User user = userRepository.findByUsernameOrEmail(loginRequestDTO.getEmail())
                 .orElseThrow(() -> new ResourceNotFoundException("This user does not exist."));
-        String jwt = jwtService.generateToken(user);
+
+        // extra claims
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("id", user.getId());
+        extraClaims.put("email", user.getEmail());
+
+        String jwt = jwtService.generateToken(extraClaims, user);
 
         return new LoginDTO(jwt, user.getId(), user.getUsername(), user.getEmail(), user.getRole());
     }
+
 
     public JwtGetDTO refreshToken(String jwtRefresh) {
         if (jwtRefresh != null) {
