@@ -20,35 +20,25 @@ public class ChatService {
 
     private final ChatRepository chatRepository;
     private final MessageRepository messageRepository;
-    private final WebSocketMessageHandler messageHandler;
-    private MainSocketHandler mainSocketHandler;
+//    private final WebSocketMessageHandler messageHandler;
+//    private MainSocketHandler mainSocketHandler;
 
 
-    public ChatService(ChatRepository chatRepository, MessageRepository messageRepository, WebSocketMessageHandler messageHandler ) {
+    public ChatService(ChatRepository chatRepository, MessageRepository messageRepository
+//                       WebSocketMessageHandler messageHandler
+    ) {
         this.chatRepository = chatRepository;
         this.messageRepository = messageRepository;
-        this.messageHandler = messageHandler;
-        this.messageHandler.setMessageConsumer(this::handleReceivedMessage);
+//        this.messageHandler = messageHandler;
+//        this.messageHandler.setMessageConsumer(this::handleReceivedMessage);
     }
 
-    @Autowired // method injection avoid the circular dependency
-    public void setMainSocketHandler(MainSocketHandler mainSocketHandler) {
-        this.mainSocketHandler = mainSocketHandler;
-    }
+//    @Autowired // method injection avoid the circular dependency
+//    public void setMainSocketHandler(MainSocketHandler mainSocketHandler) {
+//        this.mainSocketHandler = mainSocketHandler;
+//    }
 
     public Chat createNewChat(Chat chat) { return chatRepository.save(chat); }
-//public Chat createNewChat(Chat chat) {
-//    Chat savedChat = chatRepository.save(chat);
-//    // Notify users about the new chat
-//    savedChat.getUserIds().forEach(userId -> {
-//        try {
-//            mainSocketHandler.sendNewChatNotificationToUser(userId, savedChat);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    });
-//    return savedChat;
-//}
 
     public Optional<Chat> editChatName(String chatId, String newChatName) {
         Optional<Chat> chat = chatRepository.findById(chatId);
@@ -89,26 +79,27 @@ public class ChatService {
     }
 
 
-    public void handleReceivedMessage(Message message) {
-        // Save the message to the database
-        Message savedMessage = messageRepository.save(message);
-
-        // Broadcast the message to chat participants
-        // Assuming the message contains the chatId and you have a method to find participant IDs by chatId
-        Set<String> participantIds = findParticipantIdsByChatId(savedMessage.getChatId());
-        participantIds.forEach(participantId -> {
-            try {
-                mainSocketHandler.sendMessageToUser(participantId, savedMessage);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-    }
+//    public Message handleReceivedMessage(Message message) {
+//        // Save the message to the database
+//        Message savedMessage = messageRepository.save(message);
+//
+//        // Broadcast the message to chat participants
+//        // Assuming the message contains the chatId and you have a method to find participant IDs by chatId
+//        Set<String> participantIds = findParticipantIdsByChatId(savedMessage.getChatId());
+//        participantIds.forEach(participantId -> {
+//            try {
+//                mainSocketHandler.sendMessageToUser(participantId, savedMessage);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        });
+//        return savedMessage;
+//    }
 
     // Method to find participant IDs by chatId (implement as per your logic)
-    private Set<String> findParticipantIdsByChatId(String chatId) {
-        // Implement logic to find participant IDs based on chatId
-        return new HashSet<>();
-    }
+//    private Set<String> findParticipantIdsByChatId(String chatId) {
+//        // Implement logic to find participant IDs based on chatId
+//        return new HashSet<>();
+//    }
 
 }

@@ -12,20 +12,14 @@ import java.util.List;
 @Service
 public class MessageService {
     private final MessageRepository messageRepository;
-//    private final ChatService chatService;
-//    private final SimpMessagingTemplate messagingTemplate;
 
     @Autowired
-    public MessageService(MessageRepository messageRepository
-//                          ChatService chatService,
-//                          SimpMessagingTemplate messagingTemplate
-    ) {
+    public MessageService(MessageRepository messageRepository) {
         this.messageRepository = messageRepository;
-//        this.chatService = chatService;
-//        this.messagingTemplate = messagingTemplate;
     }
 
-    public Message sendMessage(Message message) {
+    public Message saveChatMessage(String chatId, Message message) {
+        message.setChatId(chatId);
         return messageRepository.save(message);
     }
 
