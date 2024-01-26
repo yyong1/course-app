@@ -3,6 +3,7 @@ package com.example.coursesystem.core.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -13,10 +14,12 @@ public class Chat {
     private String id;
     private String chatName;
     private Set<String> userIds;
-    private List<Message> messages;
+    private List<Message> messages = new ArrayList<>();
+
     public String getId() {
         return id;
     }
+
     public void setId(String id) {
         this.id = id;
     }
@@ -28,13 +31,6 @@ public class Chat {
     public void setChatName(String chatName) {
         this.chatName = chatName;
     }
-//    public String getUserId() {
-//        return userId;
-//    }
-//
-//    public void setUserId(String userId) {
-//        this.userId = userId;
-//    }
 
     public Set<String> getUserIds() { return userIds; }
 

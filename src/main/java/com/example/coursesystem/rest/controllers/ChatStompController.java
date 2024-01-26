@@ -4,10 +4,7 @@ import com.example.coursesystem.core.model.Chat;
 import com.example.coursesystem.core.model.Message;
 import com.example.coursesystem.core.service.ChatService;
 import com.example.coursesystem.core.service.MessageService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
@@ -28,7 +25,6 @@ public class ChatStompController {
     @MessageMapping("/chat/create")
     public void createChat(Chat chat) {
         Chat newChat = chatService.createNewChat(chat);
-        // Отправка сообщения пользователям, которые добавлены в чат
         newChat.getUserIds().forEach(userId ->
                 messagingTemplate.convertAndSendToUser(userId, "/queue/chat", newChat)
         );
@@ -36,27 +32,21 @@ public class ChatStompController {
 
     @MessageMapping("/chat/message")
     public void handleReceivedMessage(Message msg) {
+        System.out.println("Received message: " + msg);
+        System.out.println("Received time: " + msg.getTimestamp());
         Message savedMessage = messageService.saveChatMessage(msg.getChatId(), msg);
         Optional<Chat> chatOptional = chatService.findById(msg.getChatId());
-
-        chatOptional.ifPresent(chat -> {
-            chat.getUserIds().forEach(userId ->
-                    messagingTemplate.convertAndSendToUser(userId, "/queue/message", savedMessage)
-            );
-        });
+        System.out.println("Received chatOptional: " + chatOptional);
+        chatOptional.ifPresentOrElse(
+                chat -> {
+                    chat.getUserIds().forEach(userId ->
+                            messagingTemplate.convertAndSendToUser(userId, "/queue/message", savedMessage)
+                    );
+                },
+                () -> {
+                    System.out.println("Chat not found for id: " + msg.getChatId());
+                }
+        );
     }
 
-
-//
-//    @MessageMapping("/chat/create")
-//    @SendTo("/topic/newChat")
-//    public Chat createChat(Chat chat) {
-//        return chatService.createNewChat(chat);
-//    }
-//
-//    @MessageMapping("/chat/message")
-//    @SendTo("/topic/chat")
-//    public Message handleReceivedMessage(String chatId, Message msg) {
-//        return messageService.saveChatMessage(chatId, msg);
-//    }
 }

@@ -2,16 +2,18 @@ package com.example.coursesystem.core.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-@Document(collection = "messages")
+@Document
 public class Message {
     @Id
     private String id;
     private String senderId;
     private String chatId;
     private String content;
-    private Timestamp timestamp;
+    private Date timestamp;
 
     public String getId() {
         return id;
@@ -45,11 +47,16 @@ public class Message {
         this.chatId = chatId;
     }
 
-    public Timestamp getTimestamp() {
+    public Date getTimestamp() {
         return timestamp;
     }
 
     public void setTimestamp(String timestamp) {
-        this.timestamp = Timestamp.valueOf(timestamp);
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+            this.timestamp = dateFormat.parse(timestamp);
+        } catch (ParseException e) {
+            throw new IllegalArgumentException("Invalid date format. Expected format is 'yyyy-MM-dd HH:mm:ss.SSS'", e);
+        }
     }
 }
