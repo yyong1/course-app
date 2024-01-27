@@ -34,8 +34,4 @@ public class MessageService {
 
         return savedMessage;
     }
-
-    public List<Message> getMessagesByChatId(String chatId) {
-        return messageRepository.findByChatId(chatId);
-    }
 }

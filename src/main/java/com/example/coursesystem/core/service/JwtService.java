@@ -31,8 +31,12 @@ public class JwtService {
 
 
     private <T> T extractClaim(String token, Function<Claims, T> claimsResolvers) {
-        final Claims claims = extractAllClaims(token);
-        return claimsResolvers.apply(claims);
+        try {
+            return claimsResolvers.apply(extractAllClaims(token));
+        } catch (Exception e) {
+            logger.error("Error extracting claim: {}", e.getMessage());
+            throw e;
+        }
     }
 
     private Claims extractAllClaims(String token) {
@@ -43,10 +47,10 @@ public class JwtService {
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
-            } catch (Exception e) {
-                logger.error("Error extracting claims: {}", e.getMessage());
-                throw e;
-            }
+        } catch (Exception e) {
+            logger.error("Error extracting claims: {}", e.getMessage());
+            throw e;
+        }
     }
 
     public String extractUserName(String token) {

@@ -59,4 +59,5 @@ public class Message {
             throw new IllegalArgumentException("Invalid date format. Expected format is 'yyyy-MM-dd HH:mm:ss.SSS'", e);
         }
     }
+
 }
