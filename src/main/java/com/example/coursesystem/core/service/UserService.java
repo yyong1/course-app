@@ -119,4 +119,12 @@ public class UserService {
                 })
                 .orElseGet(() -> this.convertGoogleUserInfoToUser(googleUserInfo, tokenResponse));
     }
+
+    public boolean existsByUsernameOrEmail(String username, String email) {
+        return userRepository.existsByUsernameOrEmail(username, email);
+    }
+
+    public User save(User entity) {
+        return userRepository.save(entity);
+    }
 }

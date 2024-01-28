@@ -31,29 +31,24 @@ public class AuthService {
     @Value("${website.frontend.url}")
     private String frontendUrl;
 
-        private final UserRepository userRepository;
-        private final UserService userService;
-
-        @Autowired
-        private PasswordEncoder passwordEncoder;
-        @Autowired
-        private JwtService jwtService;
-        @Autowired
-        private AuthenticationManager authenticationManager;
-        public AuthService(UserRepository userRepository, UserService userService) {
-            this.userRepository = userRepository;
-            this.userService = userService;
-        }
+    private final UserService userService;
+    private final JwtService jwtService;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    public AuthService(UserService userService, JwtService jwtService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager) {
+        this.userService = userService;
+        this.jwtService = jwtService;
+        this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
+    }
 
     public UserGetDTO signUp(UserRequestDTO userRequestDTO) {
         userRequestDTO.setPassword(passwordEncoder.encode(userRequestDTO.getPassword()));
-        // TODO: redo this for service
-        boolean exists = userRepository.existsByUsernameOrEmail(userRequestDTO.getUsername(), userRequestDTO.getEmail());
+        boolean exists = userService.existsByUsernameOrEmail(userRequestDTO.getUsername(), userRequestDTO.getEmail());
         if (exists) {
             throw new UserAlreadyExistsException("Username or email is already taken");
         }
-        // TODO: redo this for service
-        User user = userRepository.save(userRequestDTO.toEntity());
+        User user = userService.save(userRequestDTO.toEntity());
         return new UserGetDTO(user);
     }
 
@@ -61,7 +56,7 @@ public class AuthService {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequestDTO.getEmail(), loginRequestDTO.getPassword())
         );
-        User user = userRepository.findByUsernameOrEmail(loginRequestDTO.getEmail())
+        User user = userService.findByUsernameOrEmail(loginRequestDTO.getEmail())
                 .orElseThrow(() -> new ResourceNotFoundException("This user does not exist."));
 
         // extra claims
@@ -110,36 +105,33 @@ public class AuthService {
 
 
     public GoogleTokenResponse exchangeCodeForToken(String code) {
-            try {
-                System.out.println("code ---> " + code);
+        try {
+            RestTemplate restTemplate = new RestTemplate();
+            String url = "https://oauth2.googleapis.com/token";
+            Map<String, String> requestBody = new HashMap<>();
+            requestBody.put("code", code);
+            requestBody.put("client_id", googleClientId);
+            requestBody.put("client_secret", googleClientSecret);
+            requestBody.put("redirect_uri", frontendUrl);
+            requestBody.put("grant_type", "authorization_code");
+            System.out.println("requestBody ---> " + requestBody);
 
-                RestTemplate restTemplate = new RestTemplate();
-                String url = "https://oauth2.googleapis.com/token";
-                Map<String, String> requestBody = new HashMap<>();
-                requestBody.put("code", code);
-                requestBody.put("client_id", googleClientId);
-                requestBody.put("client_secret", googleClientSecret);
-                requestBody.put("redirect_uri", frontendUrl);
-                requestBody.put("grant_type", "authorization_code");
-                System.out.println("requestBody ---> " + requestBody);
-
-                ResponseEntity<GoogleTokenResponse> response = restTemplate.postForEntity(url, requestBody, GoogleTokenResponse.class);
-                if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-                    GoogleTokenResponse tokenResponse = response.getBody();
-                    System.out.println("Token Response ---> " + tokenResponse);
-                    return tokenResponse;
-                } else {
-                    System.out.println("Error during token exchange: " + response.getStatusCode());
-                    return null;
-                }
-            } catch (Exception e) {
-                System.out.println("Error during token exchange exchangeCodeForToken: " + e.getMessage());
+            ResponseEntity<GoogleTokenResponse> response = restTemplate.postForEntity(url, requestBody, GoogleTokenResponse.class);
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                GoogleTokenResponse tokenResponse = response.getBody();
+                System.out.println("Token Response ---> " + tokenResponse);
+                return tokenResponse;
+            } else {
+                System.out.println("Error during token exchange: " + response.getStatusCode());
                 return null;
             }
-
+        } catch (Exception e) {
+            System.out.println("Error during token exchange exchangeCodeForToken: " + e.getMessage());
+            return null;
+        }
     }
     public GoogleUserInfo getGoogleUserInfo(String accessToken) {
-            System.out.println("accessToken ---> " + accessToken);
+        System.out.println("accessToken ---> " + accessToken);
         RestTemplate restTemplate = new RestTemplate();
         String url = "https://www.googleapis.com/oauth2/v3/userinfo?access_token=" + accessToken;
 
