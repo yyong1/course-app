@@ -3,24 +3,26 @@ package com.example.coursesystem.core.service;
 import com.example.coursesystem.core.exeptions.repository.ResourceNotFoundException;
 import com.example.coursesystem.core.exeptions.user.UserAlreadyExistsException;
 import com.example.coursesystem.core.model.User;
-import com.example.coursesystem.core.repository.UserRepository;
 import com.example.coursesystem.rest.dto.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class AuthService {
@@ -30,6 +32,8 @@ public class AuthService {
     private String googleClientId;
     @Value("${website.frontend.url}")
     private String frontendUrl;
+
+    private static final Logger log = LoggerFactory.getLogger(AuthService.class);
 
     private final UserService userService;
     private final JwtService jwtService;
@@ -105,33 +109,33 @@ public class AuthService {
 
 
     public GoogleTokenResponse exchangeCodeForToken(String code) {
-        try {
-            RestTemplate restTemplate = new RestTemplate();
-            String url = "https://oauth2.googleapis.com/token";
-            Map<String, String> requestBody = new HashMap<>();
-            requestBody.put("code", code);
-            requestBody.put("client_id", googleClientId);
-            requestBody.put("client_secret", googleClientSecret);
-            requestBody.put("redirect_uri", frontendUrl);
-            requestBody.put("grant_type", "authorization_code");
-            System.out.println("requestBody ---> " + requestBody);
+        RestTemplate restTemplate = new RestTemplate();
+        String url = "https://oauth2.googleapis.com/token";
+        Map<String, String> requestBody = new HashMap<>();
+        requestBody.put("code", code);
+        requestBody.put("client_id", googleClientId);
+        requestBody.put("client_secret", googleClientSecret);
+        requestBody.put("redirect_uri", frontendUrl);
+        requestBody.put("grant_type", "authorization_code");
 
+        try {
             ResponseEntity<GoogleTokenResponse> response = restTemplate.postForEntity(url, requestBody, GoogleTokenResponse.class);
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-                GoogleTokenResponse tokenResponse = response.getBody();
-                System.out.println("Token Response ---> " + tokenResponse);
-                return tokenResponse;
+                return response.getBody();
             } else {
-                System.out.println("Error during token exchange: " + response.getStatusCode());
-                return null;
+                log.error("Error during token exchange: Status Code: {}", response.getStatusCode());
+                throw new HttpClientErrorException(response.getStatusCode(), "Error during token exchange.");
             }
+        } catch (HttpClientErrorException | HttpServerErrorException e) {
+            log.error("HTTP error during token exchange: {}", e.getMessage());
+            throw e;
         } catch (Exception e) {
-            System.out.println("Error during token exchange exchangeCodeForToken: " + e.getMessage());
-            return null;
+            log.error("System error during token exchange: {}", e.getMessage());
+            throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
     public GoogleUserInfo getGoogleUserInfo(String accessToken) {
-        System.out.println("accessToken ---> " + accessToken);
         RestTemplate restTemplate = new RestTemplate();
         String url = "https://www.googleapis.com/oauth2/v3/userinfo?access_token=" + accessToken;
 
