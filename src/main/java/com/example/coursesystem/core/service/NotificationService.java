@@ -20,10 +20,13 @@ public class NotificationService {
     }
 
     public void notifyNewChat(Chat chat) {
-        String destination = "/topic/chat/" + chat.getId();
-        messagingTemplate.convertAndSend(destination, chat);
-        System.out.println("Sent chat notification to topic: " + destination);
+        chat.getUserIds().forEach(userId -> {
+            String userDestination = "/topic/new-chat/" + userId;
+            messagingTemplate.convertAndSend(userDestination, chat);
+            System.out.println("Sent new chat notification to user: " + userId);
+        });
     }
+
 
     public void notifyNewMessage(String chatId, Message message) {
         Chat chat = chatRepository.findById(chatId).orElseThrow(() ->

@@ -34,7 +34,7 @@ public class ChatStompController {
     public void handleReceivedMessage(Message msg) {
         System.out.println("Received message: " + msg);
         Message savedMessage = messageService.saveChatMessage(msg.getChatId(), msg);
-        Optional<Chat> chatOptional = chatService.findById(msg.getChatId()); // check
+        Optional<Chat> chatOptional = chatService.findById(msg.getChatId());
         chatOptional.ifPresent(chat -> {
             notificationService.notifyNewMessage(chat.getId(), savedMessage);
         });
