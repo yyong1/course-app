@@ -4,6 +4,7 @@ import com.example.coursesystem.core.service.UserService;
 import com.example.coursesystem.rest.filter.JwtAuthFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -26,7 +27,8 @@ public class SecurityConfiguration {
     private final JwtAuthFilter jwtAuthFilter;
     private final UserService userService;
 
-    public SecurityConfiguration(JwtAuthFilter jwtAuthFilter, UserService userService) {
+    // Lazy to avoid circular dependency
+    public SecurityConfiguration(JwtAuthFilter jwtAuthFilter, @Lazy UserService userService) {
         this.jwtAuthFilter = jwtAuthFilter;
         this.userService = userService;
     }

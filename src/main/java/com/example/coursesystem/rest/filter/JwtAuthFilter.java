@@ -7,6 +7,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import com.mongodb.lang.NonNull;
@@ -27,8 +28,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserService userService;
-
-    public JwtAuthFilter(JwtService jwtService, UserService userService) {
+    // Lazy to avoid circular dependency
+    public JwtAuthFilter(JwtService jwtService, @Lazy UserService userService) {
         this.jwtService = jwtService;
         this.userService = userService;
     }
