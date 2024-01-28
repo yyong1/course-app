@@ -96,7 +96,7 @@ public class AuthService {
         GoogleUserInfo userInfo = getGoogleUserInfo(tokenResponse.getAccessToken());
         System.out.println("GoogleUserInfo userInfo ---> " + userInfo);
 
-        Optional<User> existingUser = userRepository.findByUsernameOrEmail(userInfo.getEmail());
+        Optional<User> existingUser = userService.findByUsernameOrEmail(userInfo.getEmail());
         User user;
         Map<String, Object> extraClaims = new HashMap<>();
 
@@ -130,27 +130,50 @@ public class AuthService {
 
         return userRequestDTO;
     }
+    public void createTestUserWithTokens(String accessToken, String refreshToken) {
+        UserRequestDTO userRequestDTO = new UserRequestDTO();
+        userRequestDTO.setEmail("testuser@example.com");
+        userRequestDTO.setUsername("testuser");
+        userRequestDTO.setPassword("password");
+
+        User user = userRequestDTO.toEntity();
+
+        user.setAccessGoogleToken(accessToken);
+        user.setRefreshGoogleToken(refreshToken);
+
+        userRepository.save(user);
+
+        new UserGetDTO(user);
+    }
+
     public GoogleTokenResponse exchangeCodeForToken(String code) {
-            System.out.println("code ---> " + code);
+            try {
+                System.out.println("code ---> " + code);
 
-        RestTemplate restTemplate = new RestTemplate();
-        String url = "https://oauth2.googleapis.com/token";
-        Map<String, String> requestBody = new HashMap<>();
-        requestBody.put("code", code);
-        requestBody.put("client_id", googleClientId);
-        requestBody.put("client_secret", googleClientSecret);
-        requestBody.put("redirect_uri", frontendUrl);
-        requestBody.put("grant_type", "authorization_code");
-        System.out.println("requestBody ---> " + requestBody);
+                RestTemplate restTemplate = new RestTemplate();
+                String url = "https://oauth2.googleapis.com/token";
+                Map<String, String> requestBody = new HashMap<>();
+                requestBody.put("code", code);
+                requestBody.put("client_id", googleClientId);
+                requestBody.put("client_secret", googleClientSecret);
+                requestBody.put("redirect_uri", frontendUrl);
+                requestBody.put("grant_type", "authorization_code");
+                System.out.println("requestBody ---> " + requestBody);
 
-        ResponseEntity<GoogleTokenResponse> response = restTemplate.postForEntity(url, requestBody, GoogleTokenResponse.class);
-        if (response.getStatusCode().is2xxSuccessful()) {
-            System.out.println("Token Response ---> " + response.getBody());
-            return response.getBody();
-        } else {
-            System.out.println("Error during token exchange: " + response.getStatusCode());
-            return null;
-        }
+                ResponseEntity<GoogleTokenResponse> response = restTemplate.postForEntity(url, requestBody, GoogleTokenResponse.class);
+                if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                    GoogleTokenResponse tokenResponse = response.getBody();
+                    System.out.println("Token Response ---> " + tokenResponse);
+                    return tokenResponse;
+                } else {
+                    System.out.println("Error during token exchange: " + response.getStatusCode());
+                    return null;
+                }
+            } catch (Exception e) {
+                System.out.println("Error during token exchange exchangeCodeForToken: " + e.getMessage());
+                return null;
+            }
+
     }
 
     public GoogleUserInfo getGoogleUserInfo(String accessToken) {
