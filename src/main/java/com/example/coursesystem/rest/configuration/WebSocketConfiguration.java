@@ -1,6 +1,5 @@
 package com.example.coursesystem.rest.configuration;
 
-import com.example.coursesystem.rest.websockets.MainSocketHandler;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
