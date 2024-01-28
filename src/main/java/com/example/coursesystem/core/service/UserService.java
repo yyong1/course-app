@@ -4,6 +4,7 @@ import com.example.coursesystem.core.model.User;
 import com.example.coursesystem.core.repository.UserRepository;
 import com.example.coursesystem.rest.dto.UserGetDTO;
 import com.example.coursesystem.rest.dto.UserRequestDTO;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -45,6 +46,26 @@ public class UserService {
     }
     public void deleteUser(String id) {
         userRepository.deleteById(id);
+    }
+
+    public String generateUniqueUsernameForGoogleAccount(String name, String surname) {
+        String baseUsername = (name + surname).toLowerCase().replaceAll("\\s", "");
+
+        RandomStringUtils RandomStringUtils = null;
+        String randomNumber = org.apache.commons.lang3.RandomStringUtils.randomNumeric(4);
+        String username = baseUsername + randomNumber;
+
+        Optional<User> usernameExists = userRepository.findByUsernameOrEmail(username);
+
+        if (usernameExists.isPresent()) {
+            return generateUniqueUsernameForGoogleAccount(name, surname);
+        }
+
+        return username;
+    }
+
+    public String generateRandomPassword() {
+        return RandomStringUtils.randomAlphanumeric(16);
     }
 
     public UserDetailsService userDetailsService(){

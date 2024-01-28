@@ -47,7 +47,10 @@ public class SecurityConfiguration {
                         ).permitAll()
                         .requestMatchers("/api/courses/**").permitAll()
                         .requestMatchers("/api/users/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/chats/**").permitAll()
+                        .requestMatchers(HttpMethod.POST,
+                                "/api/chats/**",
+                                "/api/auth/oauth2/google/"
+                        ).permitAll()
                         .anyRequest().permitAll())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())

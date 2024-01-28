@@ -19,6 +19,16 @@ security:
       expire-length: 3600000
     refresh-token:
       expire-length: 28800000
+  oauth2:
+    client:
+      registration:
+        google:
+          client-id: 369471357919-1o2fniv51qnkaaroeav0d2fct1ueudti.apps.googleusercontent.com
+          client-secret: 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
+          scope:
+            - email
+            - profile
+
 
 website:
   frontend:
