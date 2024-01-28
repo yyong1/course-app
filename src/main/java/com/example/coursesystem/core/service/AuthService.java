@@ -139,11 +139,18 @@ public class AuthService {
         requestBody.put("code", code);
         requestBody.put("client_id", googleClientId);
         requestBody.put("client_secret", googleClientSecret);
-        requestBody.put("redirect_uri", frontendUrl + "/chat");
+        requestBody.put("redirect_uri", frontendUrl);
         requestBody.put("grant_type", "authorization_code");
         System.out.println("requestBody ---> " + requestBody);
+
         ResponseEntity<GoogleTokenResponse> response = restTemplate.postForEntity(url, requestBody, GoogleTokenResponse.class);
-        return response.getBody();
+        if (response.getStatusCode().is2xxSuccessful()) {
+            System.out.println("Token Response ---> " + response.getBody());
+            return response.getBody();
+        } else {
+            System.out.println("Error during token exchange: " + response.getStatusCode());
+            return null;
+        }
     }
 
     public GoogleUserInfo getGoogleUserInfo(String accessToken) {

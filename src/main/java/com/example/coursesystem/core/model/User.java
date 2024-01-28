@@ -24,6 +24,10 @@ public class User implements UserDetails {
 
     private UserRole role;
 
+    private String accessGoogleToken;
+
+    private String refreshGoogleToken;
+
     private Date creationDate;
 
     public String getUsername() {
@@ -76,6 +80,22 @@ public class User implements UserDetails {
 
     public boolean isAccountNonExpired() {
         return true;
+    }
+
+    public String getAccessGoogleToken() {
+        return accessGoogleToken;
+    }
+
+    public void setAccessGoogleToken(String accessGoogleToken) {
+        this.accessGoogleToken = accessGoogleToken;
+    }
+
+    public String getRefreshGoogleToken() {
+        return refreshGoogleToken;
+    }
+
+    public void setRefreshGoogleToken(String refreshGoogleToken) {
+        this.refreshGoogleToken = refreshGoogleToken;
     }
 
     @Override
