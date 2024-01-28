@@ -92,59 +92,22 @@ public class AuthService {
         String code = jsonNode.get("payload").get("code").asText();
 
         GoogleTokenResponse tokenResponse = exchangeCodeForToken(code);
-        System.out.println("GoogleTokenResponse tokenResponse ---> " + tokenResponse);
-        GoogleUserInfo userInfo = getGoogleUserInfo(tokenResponse.getAccessToken());
-        System.out.println("GoogleUserInfo userInfo ---> " + userInfo);
-
-        Optional<User> existingUser = userService.findByUsernameOrEmail(userInfo.getEmail());
-        User user;
-        Map<String, Object> extraClaims = new HashMap<>();
-
-        if (existingUser.isPresent()) {
-            // login
-            user = existingUser.get();
-            extraClaims.put("id", user.getId());
-            extraClaims.put("email", user.getEmail());
-
-            String jwt = jwtService.generateToken(extraClaims, user);
-            return new UserTokenInfo(jwt, user.getId(), user.getUsername(), user.getEmail(), user.getRole());
-        } else {
-            // register
-            UserRequestDTO userRequestDTO = convertGoogleUserInfoToUserRequestDTO(userInfo);
-            UserGetDTO userGetDTO = signUp(userRequestDTO);
-            User newUser = userRepository.findByEmail(userInfo.getEmail());
-
-            String jwt = jwtService.generateToken(extraClaims, newUser);
-            return new UserTokenInfo(jwt, newUser.getId(), newUser.getUsername(), newUser.getEmail(), newUser.getRole());
+        if (tokenResponse.getAccessToken() == null) {
+            throw new BadCredentialsException("Failed to retrieve access token");
         }
+
+        GoogleUserInfo userInfo = getGoogleUserInfo(tokenResponse.getAccessToken());
+        User user = userService.registerOrGetUserFromGoogle(userInfo, tokenResponse);
+
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("id", user.getId());
+        extraClaims.put("email", user.getEmail());
+
+        String jwt = jwtService.generateToken(extraClaims, user);
+
+        return new UserTokenInfo(jwt, user.getId(), user.getUsername(), user.getEmail(), user.getRole());
     }
-    private UserRequestDTO convertGoogleUserInfoToUserRequestDTO(GoogleUserInfo googleUserInfo) {
-        String username = userService.generateUniqueUsernameForGoogleAccount(googleUserInfo.getName(), googleUserInfo.getFamilyName());
 
-        String randomPassword = userService.generateRandomPassword();
-
-        UserRequestDTO userRequestDTO = new UserRequestDTO();
-        userRequestDTO.setEmail(googleUserInfo.getEmail());
-        userRequestDTO.setUsername(googleUserInfo.getName());
-        userRequestDTO.setPassword(randomPassword);
-
-        return userRequestDTO;
-    }
-    public void createTestUserWithTokens(String accessToken, String refreshToken) {
-        UserRequestDTO userRequestDTO = new UserRequestDTO();
-        userRequestDTO.setEmail("testuser@example.com");
-        userRequestDTO.setUsername("testuser");
-        userRequestDTO.setPassword("password");
-
-        User user = userRequestDTO.toEntity();
-
-        user.setAccessGoogleToken(accessToken);
-        user.setRefreshGoogleToken(refreshToken);
-
-        userRepository.save(user);
-
-        new UserGetDTO(user);
-    }
 
     public GoogleTokenResponse exchangeCodeForToken(String code) {
             try {
@@ -175,7 +138,6 @@ public class AuthService {
             }
 
     }
-
     public GoogleUserInfo getGoogleUserInfo(String accessToken) {
             System.out.println("accessToken ---> " + accessToken);
         RestTemplate restTemplate = new RestTemplate();
