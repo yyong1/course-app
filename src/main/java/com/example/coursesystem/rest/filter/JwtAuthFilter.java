@@ -1,12 +1,13 @@
 package com.example.coursesystem.rest.filter;
 
+import com.example.coursesystem.core.model.User;
 import com.example.coursesystem.core.service.JwtService;
 import com.example.coursesystem.core.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import com.mongodb.lang.NonNull;
@@ -14,7 +15,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 
 import java.io.IOException;
@@ -28,8 +28,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserService userService;
-
-    public JwtAuthFilter(JwtService jwtService, UserService userService) {
+    // Lazy to avoid circular dependency
+    public JwtAuthFilter(JwtService jwtService, @Lazy UserService userService) {
         this.jwtService = jwtService;
         this.userService = userService;
     }
@@ -51,8 +51,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         userEmail = jwtService.extractUserName(jwt);
         if (StringUtils.isNotEmpty(userEmail)
                 && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userService.userDetailsService()
-                    .loadUserByUsername(userEmail);
+            User userDetails = userService.findUserByUsernameOrEmail(userEmail);
             if (jwtService.isTokenValid(jwt, userDetails)) {
                 SecurityContext context = SecurityContextHolder.createEmptyContext();
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(

@@ -1,21 +1,23 @@
 package com.example.coursesystem.rest.configuration;
 
-import com.example.coursesystem.rest.websockets.MainSocketHandler;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.socket.config.annotation.EnableWebSocket;
-import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
-import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
+import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.web.socket.config.annotation.*;
 
 @Configuration
-@EnableWebSocket
-public class WebSocketConfiguration implements WebSocketConfigurer {
-    private final MainSocketHandler mainSocketHandler;
-
-    public WebSocketConfiguration(MainSocketHandler mainSocketHandler) {
-        this.mainSocketHandler = mainSocketHandler;
+@EnableWebSocketMessageBroker
+public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer {
+    @Value("${website.frontend.url}")
+    private String allowedOrigin;
+    @Override
+    public void configureMessageBroker(MessageBrokerRegistry registry) {
+        registry.enableSimpleBroker("/topic", "/queue");
+        registry.setApplicationDestinationPrefixes("/app");
+        registry.setUserDestinationPrefix("/user");
     }
-
-    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(mainSocketHandler, "/websocket").setAllowedOrigins("*");
+    @Override
+    public void registerStompEndpoints(StompEndpointRegistry registry) {
+        registry.addEndpoint("/websocket").setAllowedOriginPatterns("*").withSockJS();
     }
 }

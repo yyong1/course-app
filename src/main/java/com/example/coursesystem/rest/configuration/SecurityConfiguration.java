@@ -4,6 +4,7 @@ import com.example.coursesystem.core.service.UserService;
 import com.example.coursesystem.rest.filter.JwtAuthFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -23,13 +24,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfiguration {
-
-//    @Autowired
     private final JwtAuthFilter jwtAuthFilter;
-//    @Autowired
     private final UserService userService;
 
-    public SecurityConfiguration(JwtAuthFilter jwtAuthFilter, UserService userService) {
+    // Lazy to avoid circular dependency
+    public SecurityConfiguration(JwtAuthFilter jwtAuthFilter, @Lazy UserService userService) {
         this.jwtAuthFilter = jwtAuthFilter;
         this.userService = userService;
     }
@@ -37,10 +36,23 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers(HttpMethod.GET, "/api/courses/**").permitAll()
-                        .requestMatchers("/api/courses/**").authenticated()
-                        .requestMatchers("/api/users/**").authenticated()
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/courses/**",
+                                "/app",
+                                "/topic/**",
+                                "/ws/**"
+                        ).permitAll()
+                        .requestMatchers("/api/courses/**").permitAll()
+                        .requestMatchers("/api/users/**").permitAll()
+                        .requestMatchers(HttpMethod.POST,
+                                "/api/chats/**",
+                                "/api/auth/oauth2/google/"
+                        ).permitAll()
                         .anyRequest().permitAll())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())

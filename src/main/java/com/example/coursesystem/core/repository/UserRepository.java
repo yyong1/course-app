@@ -17,6 +17,8 @@ public interface UserRepository extends MongoRepository<User, String> {
 
     User save(User user);
 
+
+
     void deleteById(String id);
 
     boolean existsById(String id);
@@ -25,4 +27,6 @@ public interface UserRepository extends MongoRepository<User, String> {
     Optional<User> findByUsernameOrEmail(String username);
 
     User findByEmail(String email);
+
+    boolean existsByUsernameOrEmail(String username, String email);
 }
